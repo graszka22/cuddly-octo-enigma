@@ -5,6 +5,7 @@
 
 const int max_newton_iterations = 5;
 const double eps = 5;
+const double psi = 500;
 
 point_t vec_diff(point_t p0, point_t p1) {
     point_t vec = {
@@ -216,7 +217,7 @@ cubic_bezier_t fit_single_bezier(int num_of_points, point_t* points, double* cho
     return bezier;
 }
 
-cubic_bezier_t fit_bezier(int num_of_points, point_t* points) {
+cubic_bezier_t* fit_bezier(int num_of_points, point_t* points, int* num_of_beziers) {
     point_t tan1, tan2;
     get_tangents(num_of_points, points, &tan1, &tan2);
     
@@ -230,12 +231,30 @@ cubic_bezier_t fit_bezier(int num_of_points, point_t* points) {
         int index;
         get_error(num_of_points, points, chord_lengths, bezier, &error, &index);
         if(error < eps) break;
-        recalculate_chord_lengths(num_of_points, points, chord_lengths, bezier);
-        bezier = fit_single_bezier(num_of_points, points, chord_lengths, tan1, tan2);
+        if(error < psi) {
+            recalculate_chord_lengths(num_of_points, points, chord_lengths, bezier);
+            bezier = fit_single_bezier(num_of_points, points, chord_lengths, tan1, tan2);
+        } else {
+            int num_of_beziers_left;
+            int num_of_beziers_right;
+            cubic_bezier_t* beziers_left = fit_bezier(index+1, points, &num_of_beziers_left);
+            cubic_bezier_t* beziers_right = fit_bezier(num_of_points-index, points+index, &num_of_beziers_right);
+            cubic_bezier_t* ret = malloc((num_of_beziers_left+num_of_beziers_right)*sizeof(cubic_bezier_t));
+            memcpy(ret, beziers_left, num_of_beziers_left*sizeof(cubic_bezier_t));
+            memcpy(ret+num_of_beziers_left, beziers_right, num_of_beziers_right*sizeof(cubic_bezier_t));
+            free(beziers_left);
+            free(beziers_right);
+            free(chord_lengths);
+            *num_of_beziers = num_of_beziers_left+num_of_beziers_right;
+            return ret;
+        }
     }
 
     free(chord_lengths);
-    return bezier;
+    *num_of_beziers = 1;
+    cubic_bezier_t* ret = malloc(sizeof(cubic_bezier_t));
+    ret[0] = bezier;
+    return ret;
 }
 
 double lerp(double t, double x1, double x2) {
