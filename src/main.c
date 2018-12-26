@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "draw.h"
 #include "core.h"
+#include "curve_fitting.h"
 
 int main(int argc, char const *argv[])
 {
