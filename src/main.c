@@ -8,6 +8,10 @@
 
 int main(int argc, char const *argv[])
 {
+    image_data_t image_data = load_data_from_png("obrazek.png");
+    identify_lines(image_data);
+    destroy_image_data(image_data);
+    /*
     int n;
     scanf("%d", &n);
     point_t* points = malloc(n*sizeof(point_t));
@@ -25,6 +29,7 @@ int main(int argc, char const *argv[])
     destroy_image(image);
     free(beziers);
     free(points);
+    */
     
    /*
    image_t image = create_image(300, 300);
