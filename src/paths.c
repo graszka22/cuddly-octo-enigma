@@ -117,9 +117,47 @@ path_t* detect_paths(uint8_t* image, uint8_t* junctions, int width, int height, 
             }
         }
     }
+
+    for(int y = 0; y < height; ++y)
+    for(int x = 0; x < width; ++x) {
+        if(!image[y*width+x]) continue;
+        k = 0;
+        point_t c = {x, y};
+        current_path[k++] = c;
+        int xx = x, yy = y;
+        while(1) {
+            bool end_of_path = true;
+            for(int i = -1; i < 2; ++i)
+            for(int j = -1; j < 2; ++j) {
+                if(i == 0 && j == 0) continue;
+                if(xx+j < 0 || xx+j >= width || yy+i < 0 || yy+i >= height) continue;
+                if(image[(yy+i)*width+xx+j]) {
+                    end_of_path = false;
+                    c.x = xx+j;
+                    c.y = yy+i;
+                    current_path[k++] = c;
+                    image[(yy+i)*width+xx+j] = 0;
+                    xx += j;
+                    yy += i;
+                    goto BREAK_LOOP2;
+                }
+            }
+            BREAK_LOOP2:
+            if(end_of_path)
+                break;
+        }
+        if(k > 5) {
+            point_t* new_path = malloc(k*sizeof(point_t));
+            memcpy(new_path, current_path, sizeof(point_t)*k);
+            path_t path = {
+                .points_count = k,
+                .points = new_path
+            };
+            paths[n++] = path;
+        }
+    }
     free(current_path);
     *number_of_paths = n;
-    //TODO: closed paths!
     return paths;
 }
 
