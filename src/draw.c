@@ -76,12 +76,15 @@ void draw_points(image_t image, int num_of_points, point_t* points) {
     }
 }
 
-void save_grayscale(uint8_t* grayscale, int width, int height) {
+void save_grayscale(uint8_t* grayscale, uint8_t* junctions, int width, int height) {
     uint32_t* data = malloc(width*height*sizeof(uint32_t));
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
         uint32_t val = grayscale[y*width+x]*255;
-        data[y*width+x] = (val << 16) | (val << 8) | val;
+        if(junctions[y*width+x])
+            data[y*width+x] = 0xFF0000;
+        else
+            data[y*width+x] = (val << 16) | (val << 8) | val;
     }
     cairo_surface_t* surface = cairo_image_surface_create_for_data(
         data,
