@@ -9,7 +9,7 @@
 int main(int argc, char const *argv[])
 {
     image_data_t image_data = load_data_from_png("obrazek.png");
-    identify_lines(image_data);
+    vectorize_image(image_data);
     destroy_image_data(image_data);
     /*
     int n;

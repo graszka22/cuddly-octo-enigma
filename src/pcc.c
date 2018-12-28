@@ -202,6 +202,5 @@ uint8_t* identify_lines(image_data_t image_data) {
     free(grayscale);
     median_filter(merged_image, image_data.width, image_data.height);
     thinning(merged_image, image_data.width, image_data.height);
-    save_grayscale(merged_image, image_data.width, image_data.height);
     return merged_image;
 }
