@@ -1,7 +1,8 @@
 TARGET = curve
-LIBS = -lm
+DEPS = argparse
+LIBS = -lm libs/argparse/libargparse.a
 CC = gcc
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -Ilibs/argparse
 
 .PHONY: default all clean
 
@@ -11,12 +12,15 @@ all: default
 OBJECTS = $(patsubst src/%.c, build/%.o, $(wildcard src/*.c))
 HEADERS = $(wildcard src/*.h)
 
+argparse:
+	$(MAKE) -C libs/argparse
+
 build/%.o: src/%.c $(HEADERS)
 	$(CC) $(CFLAGS) `pkg-config --cflags cairo` -c $< -o $@
 
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) $(DEPS)
 	$(CC) $(OBJECTS) -Wall $(LIBS) `pkg-config --cflags --libs cairo` -o $@
 
 clean:
