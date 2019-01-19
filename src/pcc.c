@@ -193,6 +193,15 @@ void thinning(uint8_t* image, int width, int height) {
     free(copy);
 }
 
+uint8_t* threshold_lines(image_data_t image_data, float* image) {
+    uint8_t* res = malloc(sizeof(uint8_t)*image_data.width*image_data.height);
+    for(int y = 0; y < image_data.height; ++y)
+    for(int x = 0; x < image_data.width; ++x) {
+        res[y*image_data.width+x] = image[y*image_data.width+x] > 0.2;
+    }
+    return res;
+}
+
 uint8_t* identify_lines(image_data_t image_data) {
     float* grayscale = get_grayscale(image_data);
     debug_grayscale(grayscale, image_data.width, image_data.height, "debug/grayscale.png");
