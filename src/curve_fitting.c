@@ -149,8 +149,9 @@ cubic_bezier_t fit_single_bezier(int num_of_points, point_t* points, double* cho
         C[1][0] += vec_dot(A1[i], A2[i]);
         C[1][1] += vec_dot(A2[i], A2[i]);
     }
-    double alpha1 = (X[0]*C[1][1]-X[1]*C[0][1])/(C[0][0]*C[1][1]-C[0][1]*C[1][0]);
-    double alpha2 = (C[0][0]*X[1]-X[0]*C[1][0])/(C[0][0]*C[1][1]-C[0][1]*C[1][0]);
+    double det = C[0][0]*C[1][1]-C[0][1]*C[1][0];
+    double alpha1 = det == 0 ? 0 : (X[0]*C[1][1]-X[1]*C[0][1])/det;
+    double alpha2 = det == 0 ? 0 : (C[0][0]*X[1]-X[0]*C[1][0])/det;
     free(b_poly);
     free(A1);
     free(A2);
