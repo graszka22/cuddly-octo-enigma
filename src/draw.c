@@ -1,5 +1,7 @@
 #include "draw.h"
+#include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "assert.h"
 
 image_t create_image(int width, int height) {
@@ -76,24 +78,50 @@ void draw_points(image_t image, int num_of_points, point_t* points) {
     }
 }
 
-void save_grayscale(uint8_t* grayscale, uint8_t* junctions, int width, int height) {
-    uint32_t* data = malloc(width*height*sizeof(uint32_t));
-    for(int y = 0; y < height; ++y)
-    for(int x = 0; x < width; ++x) {
-        uint32_t val = grayscale[y*width+x]*255;
-        if(junctions[y*width+x])
-            data[y*width+x] = 0xFF0000;
-        else
-            data[y*width+x] = (val << 16) | (val << 8) | val;
-    }
+void save_debug(uint32_t* data, int width, int height, const char* filename) {
     cairo_surface_t* surface = cairo_image_surface_create_for_data(
-        data,
+        (uint8_t*) data,
         CAIRO_FORMAT_RGB24,
         width,
         height,
         width*4
     );
-    assert(cairo_surface_write_to_png(surface, "grayscale.png") == CAIRO_STATUS_SUCCESS);
+    assert(cairo_surface_write_to_png(surface, filename) == CAIRO_STATUS_SUCCESS);
     cairo_surface_destroy(surface);
+}
+
+void debug_grayscale(float* grayscale, int width, int height, const char* filename) {
+    uint32_t* data = malloc(width*height*sizeof(uint32_t));
+    for(int y = 0; y < height; ++y)
+    for(int x = 0; x < width; ++x) {
+        uint32_t val = grayscale[y*width+x]*255;
+        data[y*width+x] = (val << 16) | (val << 8) | val;
+    }
+    save_debug(data, width, height, filename);
+    free(data);
+}
+
+void debug_grayscale_with_points(uint8_t* grayscale, uint8_t* points, int width, int height, const char* filename) {
+    uint32_t* data = malloc(width*height*sizeof(uint32_t));
+    for(int y = 0; y < height; ++y)
+    for(int x = 0; x < width; ++x) {
+        uint32_t val = grayscale[y*width+x]*255;
+        if(points[y*width+x])
+            data[y*width+x] = 0xFF0000;
+        else
+            data[y*width+x] = (val << 16) | (val << 8) | val;
+    }
+    save_debug(data, width, height, filename);
+    free(data);
+}
+
+void debug_binary(uint8_t* binary, int width, int height, const char* filename) {
+    uint32_t* data = malloc(width*height*sizeof(uint32_t));
+    for(int y = 0; y < height; ++y)
+    for(int x = 0; x < width; ++x) {
+        uint32_t val = binary[y*width+x]*255;
+        data[y*width+x] = (val << 16) | (val << 8) | val;
+    }
+    save_debug(data, width, height, filename);
     free(data);
 }

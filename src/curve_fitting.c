@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-const int max_newton_iterations = 5;
-const double eps = 5;
-const double psi = 500;
+const int max_newton_iterations = 10;
+const double eps = 2;
+const double psi = 10;
 
 point_t evaluate(cubic_bezier_t curve, double t) {
     double inv = (1-t);

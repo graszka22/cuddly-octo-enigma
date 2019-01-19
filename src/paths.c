@@ -163,8 +163,11 @@ path_t* detect_paths(uint8_t* image, uint8_t* junctions, int width, int height, 
 
 path_t* get_paths(uint8_t* image, int width, int height, int* number_of_paths) {
     make_8_connect(image, width, height);
+    debug_binary(image, width, height, "debug/8connect.png");
     uint8_t* junctions = detect_junctions(image, width, height);
+    debug_grayscale_with_points(image, junctions, width, height, "debug/junctions.png");
     detect_endpoints(image, junctions, width, height);
+    debug_grayscale_with_points(image, junctions, width, height, "debug/endpoints.png");
     path_t* paths = detect_paths(image, junctions, width, height, number_of_paths);
     free(junctions);
     return paths;

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "draw.h"
 
 const int dots_count = 3;
@@ -194,13 +195,17 @@ void thinning(uint8_t* image, int width, int height) {
 
 uint8_t* identify_lines(image_data_t image_data) {
     float* grayscale = get_grayscale(image_data);
+    debug_grayscale(grayscale, image_data.width, image_data.height, "debug/grayscale.png");
     float** PCCdots = generate_pcc_images(image_data, grayscale);
     uint8_t* merged_image = merge_pcc_images(PCCdots, image_data.width, image_data.height);
+    debug_binary(merged_image, image_data.width, image_data.height, "debug/merged_pcc.png");
     for(int i = 0; i < dots_count; ++i)
         free(PCCdots[i]);
     free(PCCdots);
     free(grayscale);
     median_filter(merged_image, image_data.width, image_data.height);
+    debug_binary(merged_image, image_data.width, image_data.height, "debug/median_filter.png");
     thinning(merged_image, image_data.width, image_data.height);
+    debug_binary(merged_image, image_data.width, image_data.height, "debug/thinned_image.png");
     return merged_image;
 }
