@@ -77,6 +77,7 @@ path_t* detect_paths(uint8_t* image, uint8_t* junctions, int width, int height, 
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
         if(!junctions[y*width+x]) continue;
+        image[y*width+x] = 0;
         while(1) {
             k = 0;
             point_t c = {x, y};
@@ -90,14 +91,14 @@ path_t* detect_paths(uint8_t* image, uint8_t* junctions, int width, int height, 
                     if(xx+j < 0 || xx+j >= width || yy+i < 0 || yy+i >= height) continue;
                     if(image[(yy+i)*width+xx+j]) {
                         end_of_path = false;
-                        c.x = xx+j;
-                        c.y = yy+i;
-                        current_path[k++] = c;
-                        if(junctions[(yy+i)*width+xx+j])
-                            end_of_path = true;
-                        image[(yy+i)*width+xx+j] = 0;
                         xx += j;
                         yy += i;
+                        c.x = xx;
+                        c.y = yy;
+                        current_path[k++] = c;
+                        if(junctions[yy*width+xx])
+                            end_of_path = true;
+                        image[yy*width+xx] = 0;
                         goto BREAK_LOOP;
                     }
                 }
