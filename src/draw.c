@@ -61,13 +61,22 @@ void destroy_image_data(image_data_t image_data) {
 
 void draw_bezier(image_t image, cubic_bezier_t bezier) {
     cairo_set_source_rgba(image.cr, 0, 0, 0, 1);
-    cairo_set_line_width(image.cr, 3);
+    cairo_set_line_width(image.cr, 2);
     cairo_move_to(image.cr, bezier.p0.x, bezier.p0.y);
     cairo_curve_to(image.cr,
                    bezier.p1.x, bezier.p1.y,
                    bezier.p2.x, bezier.p2.y,
                    bezier.p3.x, bezier.p3.y);
     cairo_stroke(image.cr);
+    cairo_set_source_rgba(image.cr, 1, 0, 0, 1);
+    cairo_set_line_cap(image.cr, CAIRO_LINE_CAP_ROUND);
+    cairo_move_to (image.cr, bezier.p0.x, bezier.p0.y);
+	cairo_line_to (image.cr, bezier.p0.x, bezier.p0.y);
+    cairo_stroke (image.cr);
+    cairo_set_line_cap(image.cr, CAIRO_LINE_CAP_ROUND);
+    cairo_move_to (image.cr, bezier.p3.x, bezier.p3.y);
+	cairo_line_to (image.cr, bezier.p3.x, bezier.p3.y);
+    cairo_stroke (image.cr);
 }
 
 void draw_points(image_t image, int num_of_points, point_t* points) {
@@ -120,6 +129,31 @@ void debug_binary(uint8_t* binary, int width, int height, const char* filename) 
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
         uint32_t val = binary[y*width+x]*255;
+        data[y*width+x] = (val << 16) | (val << 8) | val;
+    }
+    save_debug(data, width, height, filename);
+    free(data);
+}
+
+void debug_paths(path_t* paths, int number_of_paths, int width, int height, const char* filename) {
+    uint32_t* data = malloc(width*height*sizeof(uint32_t));
+    memset(data, 0, width*height*sizeof(uint32_t));
+    for(int i = 0; i < number_of_paths; ++i) {
+        for(int j = 0; j < paths[i].points_count; ++j) {
+            int x = paths[i].points[j].x;
+            int y = paths[i].points[j].y;
+            data[y*width+x] = 0xFFFFFF;
+        }
+    }
+    save_debug(data, width, height, filename);
+    free(data);
+}
+
+void debug_pcc(float* pcc, int width, int height, const char* filename) {
+    uint32_t* data = malloc(width*height*sizeof(uint32_t));
+    for(int y = 0; y < height; ++y)
+    for(int x = 0; x < width; ++x) {
+        uint32_t val = (pcc[y*width+x]+1)/2*255;
         data[y*width+x] = (val << 16) | (val << 8) | val;
     }
     save_debug(data, width, height, filename);

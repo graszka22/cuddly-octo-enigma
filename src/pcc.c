@@ -21,7 +21,7 @@ void destroy_kdot(kdot_t dot) {
 }
 
 float gauss(float x, float sigma) {
-    return exp(-(x/sigma)*(x/sigma)/2)/(sigma*sqrt(2*PI));
+    return exp(-(x/sigma)*(x/sigma)/2);
 }
 
 int next_odd(float f) {
@@ -65,6 +65,11 @@ kdot_t* generate_dots() {
 
 float** generate_pcc_images(image_data_t image_data, float* image) {
     kdot_t* kdots = generate_dots();
+    for(int i = 0; i < dots_count; ++i) {
+        char buf[20];
+        sprintf(buf, "debug/dot%d.png", i);
+        debug_grayscale(kdots[i].data, kdots[i].dot_size, kdots[i].dot_size, buf);
+    }
     float** images = malloc(dots_count*sizeof(float*));
     for(int i = 0; i < dots_count; ++i) {
         
@@ -206,6 +211,11 @@ uint8_t* identify_lines(image_data_t image_data) {
     float* grayscale = get_grayscale(image_data);
     debug_grayscale(grayscale, image_data.width, image_data.height, "debug/grayscale.png");
     float** PCCdots = generate_pcc_images(image_data, grayscale);
+    for(int i = 0; i < dots_count; ++i) {
+        char buf[20];
+        sprintf(buf, "debug/pcc%d.png", i);
+        debug_pcc(PCCdots[i], image_data.width, image_data.height, buf);
+    }
     uint8_t* merged_image = merge_pcc_images(PCCdots, image_data.width, image_data.height);
     debug_binary(merged_image, image_data.width, image_data.height, "debug/merged_pcc.png");
     for(int i = 0; i < dots_count; ++i)
