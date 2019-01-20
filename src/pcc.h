@@ -3,6 +3,6 @@
 
 #include "defs.h"
 
-uint8_t* identify_lines(image_data_t image_data);
+uint8_t* identify_lines(image_data_t image_data, float** maxi_pcc);
 
 #endif

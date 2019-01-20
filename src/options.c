@@ -9,10 +9,11 @@ options_t program_options = {
     .median_filter = 2,
     .threshold = 0,
     .min_dot = 1,
-    .kernels_exponent = 1.5,
+    .kernels_exponent = 1.2,
     .epsilon = 2,
     .psi = 5,
     .output_path = "result.svg",
+    .line_width = 0,
 };
 
 static const char *const usage[] = {

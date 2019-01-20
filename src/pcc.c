@@ -208,7 +208,28 @@ uint8_t* threshold_lines(image_data_t image_data, float* image) {
     return res;
 }
 
-uint8_t* identify_lines(image_data_t image_data) {
+float* get_maxi_pcc(float** PCCdots, int width, int height) {
+    const int dots_count = program_options.kernels_count;
+    kdot_t* kdots = generate_dots();
+    float* maxi_pcc = malloc(sizeof(float)*width*height);
+    for(int y = 0; y < height; ++y)
+    for(int x = 0; x < width; ++x) {
+        float max_dot = 1;
+        float max_pcc = 0;
+        for(int i = 0; i < dots_count; ++i) {
+            float pcc = PCCdots[i][y*width+x];
+            if(pcc > max_pcc)
+                max_pcc = pcc, max_dot = kdots[i].dot_size;
+        }
+        maxi_pcc[y*width+x] = max_dot;
+    }
+    for(int i = 0; i < dots_count; ++i)
+        destroy_kdot(kdots[i]);
+    free(kdots);
+    return maxi_pcc;
+}
+
+uint8_t* identify_lines(image_data_t image_data, float** maxi_pcc) {
     const int dots_count = program_options.kernels_count;
     float* grayscale = get_grayscale(image_data);
     debug_grayscale(grayscale, image_data.width, image_data.height, "debug/grayscale.png");
@@ -219,6 +240,7 @@ uint8_t* identify_lines(image_data_t image_data) {
         debug_pcc(PCCdots[i], image_data.width, image_data.height, buf);
     }
     uint8_t* merged_image = merge_pcc_images(PCCdots, image_data.width, image_data.height);
+    *maxi_pcc = get_maxi_pcc(PCCdots, image_data.width, image_data.height);
     debug_binary(merged_image, image_data.width, image_data.height, "debug/merged_pcc.png");
     for(int i = 0; i < dots_count; ++i)
         free(PCCdots[i]);

@@ -61,9 +61,9 @@ void destroy_image_data(image_data_t image_data) {
     free(image_data.data);
 }
 
-void draw_bezier(image_t image, cubic_bezier_t bezier) {
+void draw_bezier(image_t image, cubic_bezier_t bezier, float line_width) {
     cairo_set_source_rgba(image.cr, 0, 0, 0, 1);
-    cairo_set_line_width(image.cr, program_options.line_width);
+    cairo_set_line_width(image.cr, line_width);
     cairo_move_to(image.cr, bezier.p0.x, bezier.p0.y);
     cairo_curve_to(image.cr,
                    bezier.p1.x, bezier.p1.y,
