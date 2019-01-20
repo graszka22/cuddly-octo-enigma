@@ -23,4 +23,9 @@ typedef struct {
     cairo_format_t format;
 } image_data_t;
 
+typedef struct {
+    int points_count;
+    point_t* points;
+} path_t;
+
 #endif

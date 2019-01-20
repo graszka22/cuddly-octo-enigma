@@ -1,4 +1,5 @@
 #include "draw.h"
+#include <cairo-svg.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -68,15 +69,6 @@ void draw_bezier(image_t image, cubic_bezier_t bezier) {
                    bezier.p2.x, bezier.p2.y,
                    bezier.p3.x, bezier.p3.y);
     cairo_stroke(image.cr);
-    cairo_set_source_rgba(image.cr, 1, 0, 0, 1);
-    cairo_set_line_cap(image.cr, CAIRO_LINE_CAP_ROUND);
-    cairo_move_to (image.cr, bezier.p0.x, bezier.p0.y);
-	cairo_line_to (image.cr, bezier.p0.x, bezier.p0.y);
-    cairo_stroke (image.cr);
-    cairo_set_line_cap(image.cr, CAIRO_LINE_CAP_ROUND);
-    cairo_move_to (image.cr, bezier.p3.x, bezier.p3.y);
-	cairo_line_to (image.cr, bezier.p3.x, bezier.p3.y);
-    cairo_stroke (image.cr);
 }
 
 void draw_points(image_t image, int num_of_points, point_t* points) {
@@ -158,4 +150,24 @@ void debug_pcc(float* pcc, int width, int height, const char* filename) {
     }
     save_debug(data, width, height, filename);
     free(data);
+}
+
+cairo_status_t rsvg_cairo_write_func (void *closure, const unsigned char *data, unsigned int length)
+{
+    if (fwrite (data, 1, length, (FILE *) closure) == length)
+        return CAIRO_STATUS_SUCCESS;
+    return CAIRO_STATUS_WRITE_ERROR;
+}
+
+image_t create_svg_image(int width, int height, FILE* output_file) {
+    cairo_surface_t * surface = cairo_svg_surface_create_for_stream(rsvg_cairo_write_func, output_file,
+                                                               width, height);
+
+    cairo_t* cr = cairo_create(surface);
+    image_t image;
+    image.surface = surface;
+    image.cr = cr;
+    cairo_set_source_rgb (image.cr, 1, 1, 1);
+    cairo_paint(image.cr);
+    return image;
 }

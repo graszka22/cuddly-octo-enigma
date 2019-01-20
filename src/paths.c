@@ -170,6 +170,7 @@ path_t* get_paths(uint8_t* image, int width, int height, int* number_of_paths) {
     detect_endpoints(image, junctions, width, height);
     debug_grayscale_with_points(image, junctions, width, height, "debug/endpoints.png");
     path_t* paths = detect_paths(image, junctions, width, height, number_of_paths);
+    debug_paths(paths, *number_of_paths, width, height, "debug/paths.png");
     free(junctions);
     return paths;
 }

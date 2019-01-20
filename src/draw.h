@@ -3,6 +3,7 @@
 
 #include <cairo.h>
 #include <stdint.h>
+#include <stdio.h>
 #include "defs.h"
 
 image_t create_image(int width, int height);
@@ -16,8 +17,11 @@ void debug_grayscale(float* grayscale, int width, int height, const char* filena
 void debug_grayscale_with_points(uint8_t* grayscale, uint8_t* points, int width, int height, const char* filename);
 void debug_binary(uint8_t* binary, int width, int height, const char* filename);
 void debug_paths(path_t* paths, int number_of_paths, int width, int height, const char* filename);
+void debug_pcc(float* pcc, int width, int height, const char* filename);
 
 void draw_bezier(image_t image, cubic_bezier_t bezier);
 void draw_points(image_t image, int num_of_points, point_t* points);
+
+image_t create_svg_image(int width, int height, FILE* output_file);
 
 #endif

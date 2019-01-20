@@ -6,7 +6,7 @@
 
 const int max_newton_iterations = 10;
 const double eps = 2;
-const double psi = 10;
+const double psi = 5;
 
 point_t evaluate(cubic_bezier_t curve, double t) {
     double inv = (1-t);

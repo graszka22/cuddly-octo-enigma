@@ -5,10 +5,10 @@
 #include <string.h>
 #include "draw.h"
 
-const int dots_count = 3;
-const float wmin = 2;
+const int dots_count = 5;
+const float wmin = 1;
 //const float wmax = 20.25;
-const float C = 1.5;
+const float C = 2;
 const float PI = 3.1415;
 
 typedef struct {
@@ -124,7 +124,7 @@ uint8_t* merge_pcc_images(float** PCCdots, int width, int height) {
 }
 
 void median_filter(uint8_t* image, int width, int height) {
-    const int ws = 4;
+    const int ws = 2;
     for(int y = ws/2; y < height-ws/2; ++y)
     for(int x = ws/2; x < width-ws/2; ++x) {
         int ones = 0, zeroes = 0;

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "core.h"
 #include "paths.h"
 #include "pcc.h"
@@ -9,7 +10,9 @@ cubic_bezier_t* vectorize_image(image_data_t image_data) {
     uint8_t* lines = identify_lines(image_data);
     int number_of_paths;
     path_t* paths = get_paths(lines, image_data.width, image_data.height, &number_of_paths);
-    image_t image = create_image(image_data.width, image_data.height);
+    FILE* output_file = fopen ("result.svg", "wb");
+    
+    image_t image = create_svg_image(image_data.width, image_data.height, output_file);
 
     for(int i = 0; i < number_of_paths; ++i) {
         path_t path = paths[i];
@@ -22,9 +25,10 @@ cubic_bezier_t* vectorize_image(image_data_t image_data) {
 
         free(beziers);
     }
-
-    save_to_png(image, "result.png");
+    cairo_surface_flush(image.surface);
+    cairo_surface_finish(image.surface);
     destroy_image(image);
+    fclose (output_file);
 
     free(lines);
     for(int i = 0; i < number_of_paths; ++i)
