@@ -4,11 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "draw.h"
+#include "options.h"
 
-const int dots_count = 5;
-const float wmin = 1;
-//const float wmax = 20.25;
-const float C = 2;
 const float PI = 3.1415;
 
 typedef struct {
@@ -44,8 +41,10 @@ float* get_grayscale(image_data_t image_data) {
 }
 
 kdot_t* generate_dots() {
+    const int dots_count = program_options.kernels_count;
+    float C = program_options.kernels_exponent;
     kdot_t* dots = malloc(dots_count*sizeof(kdot_t));
-    float sigma = wmin/3;
+    float sigma = program_options.min_dot/3;
     for(int i = 0; i < dots_count; ++i) {
         const int dot_size = next_odd(7*sigma);
         float* data = malloc(dot_size*dot_size*sizeof(float));
@@ -65,6 +64,7 @@ kdot_t* generate_dots() {
 
 float** generate_pcc_images(image_data_t image_data, float* image) {
     kdot_t* kdots = generate_dots();
+    const int dots_count = program_options.kernels_count;
     for(int i = 0; i < dots_count; ++i) {
         char buf[20];
         sprintf(buf, "debug/dot%d.png", i);
@@ -109,6 +109,7 @@ float** generate_pcc_images(image_data_t image_data, float* image) {
 }
 
 uint8_t* merge_pcc_images(float** PCCdots, int width, int height) {
+    const int dots_count = program_options.kernels_count;
     uint8_t* merged_images = malloc(sizeof(uint8_t)*width*height);
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
@@ -118,13 +119,13 @@ uint8_t* merge_pcc_images(float** PCCdots, int width, int height) {
             max = fmaxf(max, PCCdots[i][y*width+x]);
         }
         const float v = fabs(max) > fabs(min) ? max : min;
-        merged_images[y*width+x] = v > 0 ? 1 : 0;
+        merged_images[y*width+x] = v > program_options.threshold ? 1 : 0;
     }
     return merged_images;
 }
 
 void median_filter(uint8_t* image, int width, int height) {
-    const int ws = 2;
+    const int ws = program_options.median_filter;
     for(int y = ws/2; y < height-ws/2; ++y)
     for(int x = ws/2; x < width-ws/2; ++x) {
         int ones = 0, zeroes = 0;
@@ -208,6 +209,7 @@ uint8_t* threshold_lines(image_data_t image_data, float* image) {
 }
 
 uint8_t* identify_lines(image_data_t image_data) {
+    const int dots_count = program_options.kernels_count;
     float* grayscale = get_grayscale(image_data);
     debug_grayscale(grayscale, image_data.width, image_data.height, "debug/grayscale.png");
     float** PCCdots = generate_pcc_images(image_data, grayscale);

@@ -2,7 +2,7 @@ TARGET = curve
 DEPS = argparse
 LIBS = -lm libs/argparse/libargparse.a
 CC = gcc
-CFLAGS = -g -Wall -Ilibs/argparse
+CFLAGS = -O3 -Wall -Ilibs/argparse
 
 .PHONY: default all clean
 
@@ -24,5 +24,5 @@ $(TARGET): $(OBJECTS) $(DEPS)
 	$(CC) $(OBJECTS) -Wall $(LIBS) `pkg-config --cflags --libs cairo` -o $@
 
 clean:
-	-rm -f *.o
+	-rm -f build/*.o
 	-rm -f $(TARGET)

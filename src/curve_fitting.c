@@ -1,12 +1,9 @@
 #include "curve_fitting.h"
 #include "utils.h"
+#include "options.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-
-const int max_newton_iterations = 10;
-const double eps = 2;
-const double psi = 5;
 
 point_t evaluate(cubic_bezier_t curve, double t) {
     double inv = (1-t);
@@ -165,6 +162,10 @@ cubic_bezier_t fit_single_bezier(int num_of_points, point_t* points, double* cho
 }
 
 cubic_bezier_t* fit_bezier(int num_of_points, point_t* points, int* num_of_beziers) {
+    const float psi = program_options.psi;
+    const float eps = program_options.epsilon;
+    const int newton_iterations = program_options.newton_iterations;
+    
     point_t tan1, tan2;
     get_tangents(num_of_points, points, &tan1, &tan2);
     
@@ -173,7 +174,7 @@ cubic_bezier_t* fit_bezier(int num_of_points, point_t* points, int* num_of_bezie
 
     cubic_bezier_t bezier = fit_single_bezier(num_of_points, points, chord_lengths, tan1, tan2);
 
-    for(int i = 0; i < max_newton_iterations; ++i) {
+    for(int i = 0; i < newton_iterations; ++i) {
         double error;
         int index;
         get_error(num_of_points, points, chord_lengths, bezier, &error, &index);

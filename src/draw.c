@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "assert.h"
+#include <assert.h>
+#include "options.h"
 
 image_t create_image(int width, int height) {
     image_t image;
@@ -92,6 +93,7 @@ void save_debug(uint32_t* data, int width, int height, const char* filename) {
 }
 
 void debug_grayscale(float* grayscale, int width, int height, const char* filename) {
+    if(!program_options.debug) return;
     uint32_t* data = malloc(width*height*sizeof(uint32_t));
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
@@ -103,6 +105,7 @@ void debug_grayscale(float* grayscale, int width, int height, const char* filena
 }
 
 void debug_grayscale_with_points(uint8_t* grayscale, uint8_t* points, int width, int height, const char* filename) {
+    if(!program_options.debug) return;
     uint32_t* data = malloc(width*height*sizeof(uint32_t));
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
@@ -117,6 +120,7 @@ void debug_grayscale_with_points(uint8_t* grayscale, uint8_t* points, int width,
 }
 
 void debug_binary(uint8_t* binary, int width, int height, const char* filename) {
+    if(!program_options.debug) return;
     uint32_t* data = malloc(width*height*sizeof(uint32_t));
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {
@@ -128,6 +132,7 @@ void debug_binary(uint8_t* binary, int width, int height, const char* filename) 
 }
 
 void debug_paths(path_t* paths, int number_of_paths, int width, int height, const char* filename) {
+    if(!program_options.debug) return;
     uint32_t* data = malloc(width*height*sizeof(uint32_t));
     memset(data, 0, width*height*sizeof(uint32_t));
     for(int i = 0; i < number_of_paths; ++i) {
@@ -142,6 +147,7 @@ void debug_paths(path_t* paths, int number_of_paths, int width, int height, cons
 }
 
 void debug_pcc(float* pcc, int width, int height, const char* filename) {
+    if(!program_options.debug) return;
     uint32_t* data = malloc(width*height*sizeof(uint32_t));
     for(int y = 0; y < height; ++y)
     for(int x = 0; x < width; ++x) {

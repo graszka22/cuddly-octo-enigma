@@ -1,16 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "defs.h"
 #include "core.h"
 #include "paths.h"
 #include "pcc.h"
 #include "curve_fitting.h"
 #include "draw.h"
+#include "options.h"
 
-cubic_bezier_t* vectorize_image(image_data_t image_data) {
+void vectorize_image() {
+    image_data_t image_data = load_data_from_png(program_options.input_path);
     uint8_t* lines = identify_lines(image_data);
     int number_of_paths;
     path_t* paths = get_paths(lines, image_data.width, image_data.height, &number_of_paths);
-    FILE* output_file = fopen ("result.svg", "wb");
+    FILE* output_file = fopen (program_options.output_path, "wb");
     
     image_t image = create_svg_image(image_data.width, image_data.height, output_file);
 
@@ -34,4 +37,5 @@ cubic_bezier_t* vectorize_image(image_data_t image_data) {
     for(int i = 0; i < number_of_paths; ++i)
         destroy_path(paths[i]);
     free(paths);
+    destroy_image_data(image_data);
 }
