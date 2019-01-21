@@ -42,7 +42,7 @@ void parse_options(int argc, char const *argv[]) {
         OPT_FLOAT('p', "psi", &(program_options.psi), "if the error is bigger than that, we split the points and fit more curves"),
 
         OPT_GROUP("Line drawing"),
-        OPT_FLOAT('w', "line_width", &(program_options.line_width), "the width of the drawn lines"),
+        OPT_FLOAT('w', "line_width", &(program_options.line_width), "the width of the drawn lines, 0 = auto line width"),
         OPT_END(),
     };
     struct argparse argparse;
