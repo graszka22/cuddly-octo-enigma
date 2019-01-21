@@ -22,18 +22,17 @@ void vectorize_image() {
         path_t path = paths[i];
         int num_of_beziers;
         cubic_bezier_t* beziers = fit_bezier(path.points_count, path.points, &num_of_beziers);
-
-        for(int i = 0; i < num_of_beziers; ++i) {
-            float line_width;
-            if(program_options.line_width == 0) {
-                int x0 = beziers[i].p0.x;
-                int y0 = beziers[i].p0.y;
-                int x1 = beziers[i].p3.x;
-                int y1 = beziers[i].p3.y;
-                line_width = (maxi_pcc[y0*image_data.width+x0]+maxi_pcc[y1*image_data.width+x1])/2;
-            } else {
-                line_width = program_options.line_width;
+        float line_width = 0;
+        if(program_options.line_width == 0) {
+            for(int j = 0; j < path.points_count; ++j) {
+                line_width += maxi_pcc[(int)(path.points[j].y)*image_data.width+(int)path.points[j].x];
             }
+            line_width /= path.points_count;
+        } else {
+            line_width = program_options.line_width;
+        }
+        
+        for(int i = 0; i < num_of_beziers; ++i) {
             draw_bezier(image, beziers[i], line_width);
         }
 
